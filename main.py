@@ -78,7 +78,56 @@ class Variable(Node):
 
 
 class ListNode:
-    key: str
-    value: float
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.next = None
 
-    next = None
+class HashTable:
+    def __init__(self, m):
+        self.__m = m
+        self.__table = [None] * m
+
+    def __hash(self, key):
+        return hash(key) % self.__m
+
+    def __setitem__(self, key, value):
+        index = self.__hash(key)
+        if self.__table[index] is None:
+            self.__table[index] = ListNode(key, value)
+        else:
+            head = self.__table[index]
+            while head.next is not None:
+                if head.key == key:
+                    head.value = value
+                    return
+                head = head.next
+            if head.key == key:
+                head.value = value
+                return
+            head.next = ListNode(key, value)
+
+    def __getitem__(self, key):
+        index = self.__hash(key)
+        if self.__table[index] is None:
+            return None
+        head = self.__table[index]
+        while head is not None:
+            if head.key == key:
+                return head.value
+            head = head.next
+        return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
