@@ -10,6 +10,12 @@ class Operator(Node):
     precedence: int
     sign: str
 
+    def __le__(self, other):
+        if isinstance(other, Operator):
+            return self.precedence <= other.precedence
+        else:
+            raise ArithmeticError
+
 
 class UnaryOperator(Operator):
     @abstractmethod
@@ -63,6 +69,9 @@ class Divide(BinaryOperator):
         return a / b
 
 
+class Number(Node):
+    value: float
 
 
-
+class Variable(Node):
+    value: str
