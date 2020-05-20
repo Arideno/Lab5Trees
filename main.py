@@ -75,3 +75,10 @@ class Number(Node):
 
 class Variable(Node):
     value: str
+
+
+class ListNode:
+    key: str
+    value: float
+
+    next = None
