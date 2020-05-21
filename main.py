@@ -119,15 +119,46 @@ class HashTable:
         return None
 
 
+class Stack:
+    __stack = []
+
+    def __len__(self):
+        return len(self.__stack)
+
+    def push(self, value):
+        self.__stack.append(value)
+
+    def pop(self):
+        assert len(self) > 0
+        return self.__stack.pop()
+
+    def top(self):
+        assert len(self) > 0
+        return self.__stack[-1]
+
+    def empty(self):
+        return len(self) == 0
 
 
+def is_operator(sign):
+    return sign in ['+', '-', '*', '/', '(', ')']
 
 
+def get_operator(sign, binary=True):
+    if sign == '+':
+        return Plus()
+    if sign == '-':
+        if binary:
+            return Minus()
+        else:
+            return UnaryMinus()
+    if sign == '*':
+        return Multiply()
+    if sign == '/':
+        return Divide()
+    raise ArithmeticError
 
 
-
-
-
-
-
-
+def parse(input_str):
+    op_stack = Stack()
+    tree_stack = Stack()
