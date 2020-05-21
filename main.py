@@ -249,7 +249,10 @@ root = Node()
 
 
 def calc(node: Node):
-    if isinstance(node, Number):
+    if isinstance(node, Assign):
+        a, b = node.apply(*node.children)
+        table[a.value] = calc(b)
+    elif isinstance(node, Number):
         return node.value
     elif isinstance(node, Variable):
         return table[node.value]
@@ -257,6 +260,12 @@ def calc(node: Node):
         return node.apply(calc(node.children[0]))
     elif isinstance(node, BinaryOperator):
         return node.apply(calc(node.children[0]), calc(node.children[1]))
+    else:
+        for child in node.children:
+            if not isinstance(child, Assign):
+                return calc(child)
+            else:
+                calc(child)
 
 
 with open('input.txt', 'r') as f:
@@ -265,7 +274,8 @@ with open('input.txt', 'r') as f:
         k, v = line.split('=')
         node = Assign()
         node.children.append(Variable(k))
-        node.children.append(parse(v))
+        node.children.append(parse(v.rstrip()))
         root.children.append(node)
     root.children.append(parse(lines[-1]))
 
+print(calc(root))
