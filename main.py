@@ -70,11 +70,13 @@ class Divide(BinaryOperator):
 
 
 class Number(Node):
-    value: float
+    def __init__(self, value: float):
+        self.value = value
 
 
 class Variable(Node):
-    value: str
+    def __init__(self, value: str):
+        self.value = value
 
 
 class ListNode:
@@ -159,6 +161,17 @@ def get_operator(sign, binary=True):
     raise ArithmeticError
 
 
-def parse(input_str):
+def parse(input_str: str):
     op_stack = Stack()
     tree_stack = Stack()
+    i = 0
+    while i < len(input_str):
+        if not is_operator(input_str[i]):
+            j = i + 1
+            while j < len(input_str) and not is_operator(input_str[j]):
+                j += 1
+            value = input_str[i:j]
+            if value.isnumeric():
+                tree_stack.push(Number(float(value)))
+            else:
+                tree_stack.push(Variable(value))
