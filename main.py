@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class Node(ABC):
-    left = None
-    right = None
+    def __init__(self):
+        self.children = []
 
 
 class Operator(Node):
@@ -71,11 +71,13 @@ class Divide(BinaryOperator):
 
 class Number(Node):
     def __init__(self, value: float):
+        super().__init__()
         self.value = value
 
 
 class Variable(Node):
     def __init__(self, value: str):
+        super().__init__()
         self.value = value
 
 
@@ -171,14 +173,30 @@ def pop_operator():
     op = op_stack.pop()
     if isinstance(op, UnaryOperator):
         node = tree_stack.pop()
-        op.right = node
+        op.children.append(node)
         tree_stack.push(op)
     elif isinstance(op, BinaryOperator):
         r = tree_stack.pop()
         l = tree_stack.pop()
-        op.right = r
-        op.left = l
-        tree_stack.push(op)
+        if isinstance(l, Number) and l.value == 0:
+            if isinstance(op, Divide):
+                tree_stack.push(Number(0))
+            elif isinstance(op, Plus):
+                tree_stack.push(r)
+            elif isinstance(op, Multiply):
+                tree_stack.push(Number(0))
+        elif isinstance(r, Number) and r.value == 0:
+            if isinstance(op, Plus) or isinstance(op, Minus):
+                tree_stack.push(l)
+            elif isinstance(op, Multiply):
+                tree_stack.push(Number(0))
+        elif isinstance(r, Number) and r.value == 1:
+            if isinstance(op, Divide):
+                tree_stack.push(l)
+        else:
+            op.children.append(l)
+            op.children.append(r)
+            tree_stack.push(op)
 
 
 def parse(input_str: str):
@@ -226,9 +244,9 @@ def calc(node: Node):
     elif isinstance(node, Variable):
         return table[node.value]
     elif isinstance(node, UnaryOperator):
-        return node.apply(calc(node.right))
+        return node.apply(calc(node.children[0]))
     elif isinstance(node, BinaryOperator):
-        return node.apply(calc(node.left), calc(node.right))
+        return node.apply(calc(node.children[0]), calc(node.children[1]))
 
 
 with open('input.txt', 'r') as f:
