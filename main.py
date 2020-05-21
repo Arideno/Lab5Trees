@@ -231,6 +231,9 @@ def calc(node: Node):
         return node.apply(calc(node.left), calc(node.right))
 
 
-table["a"] = 6
-table["b"] = 7
-print(calc(parse("(-mk+b)/(-2)")))
+with open('input.txt', 'r') as f:
+    lines = f.readlines()
+    for line in lines[:-1]:
+        k, v = line.split('=')
+        table[k] = float(v)
+    print(calc(parse(lines[-1])))
