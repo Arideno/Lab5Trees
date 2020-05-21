@@ -85,6 +85,7 @@ class ListNode:
         self.value = value
         self.next = None
 
+
 class HashTable:
     def __init__(self, m):
         self.__m = m
@@ -122,7 +123,8 @@ class HashTable:
 
 
 class Stack:
-    __stack = []
+    def __init__(self):
+        self.__stack = []
 
     def __len__(self):
         return len(self.__stack)
@@ -161,9 +163,25 @@ def get_operator(sign, binary=True):
     raise ArithmeticError
 
 
+op_stack = Stack()
+tree_stack = Stack()
+
+
+def pop_operator():
+    op = op_stack.pop()
+    if isinstance(op, UnaryOperator):
+        node = tree_stack.pop()
+        op.right = node
+        tree_stack.push(op)
+    elif isinstance(op, BinaryOperator):
+        r = tree_stack.pop()
+        l = tree_stack.pop()
+        op.right = r
+        op.left = l
+        tree_stack.push(op)
+
+
 def parse(input_str: str):
-    op_stack = Stack()
-    tree_stack = Stack()
     i = 0
     while i < len(input_str):
         if not is_operator(input_str[i]):
@@ -171,7 +189,33 @@ def parse(input_str: str):
             while j < len(input_str) and not is_operator(input_str[j]):
                 j += 1
             value = input_str[i:j]
+            i = j
             if value.isnumeric():
                 tree_stack.push(Number(float(value)))
             else:
                 tree_stack.push(Variable(value))
+        else:
+            if input_str[i] == '(':
+                op_stack.push('(')
+            elif input_str[i] == ')':
+                while op_stack.top() != '(':
+                    pop_operator()
+                op_stack.pop()
+            else:
+                if input_str[i] == '-' and (i == 0 or input_str[i - 1] == '('):
+                    op_stack.push(get_operator('-', False))
+                else:
+                    op = get_operator(input_str[i])
+                    while not op_stack.empty() and op_stack.top() != '(' and op <= op_stack.top():
+                        pop_operator()
+                    op_stack.push(op)
+            i += 1
+
+    while not op_stack.empty():
+        pop_operator()
+
+    return tree_stack.pop()
+
+
+root = parse('(-a+b)/33*abc')
+print(root)
