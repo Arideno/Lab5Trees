@@ -217,5 +217,20 @@ def parse(input_str: str):
     return tree_stack.pop()
 
 
-root = parse('(-a+b)/33*abc')
-print(root)
+table = HashTable(20)
+
+
+def calc(node: Node):
+    if isinstance(node, Number):
+        return node.value
+    elif isinstance(node, Variable):
+        return table[node.value]
+    elif isinstance(node, UnaryOperator):
+        return node.apply(calc(node.right))
+    elif isinstance(node, BinaryOperator):
+        return node.apply(calc(node.left), calc(node.right))
+
+
+table["a"] = 6
+table["b"] = 7
+print(calc(parse("(-mk+b)/(-2)")))
