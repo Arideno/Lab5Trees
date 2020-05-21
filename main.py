@@ -69,6 +69,14 @@ class Divide(BinaryOperator):
         return a / b
 
 
+class Assign(BinaryOperator):
+    precedence = 1
+    sign = "="
+
+    def apply(self, a, b):
+        return a, b
+
+
 class Number(Node):
     def __init__(self, value: float):
         super().__init__()
@@ -237,6 +245,8 @@ def parse(input_str: str):
 
 table = HashTable(20)
 
+root = Node()
+
 
 def calc(node: Node):
     if isinstance(node, Number):
@@ -253,5 +263,9 @@ with open('input.txt', 'r') as f:
     lines = f.readlines()
     for line in lines[:-1]:
         k, v = line.split('=')
-        table[k] = float(v)
-    print(calc(parse(lines[-1])))
+        node = Assign()
+        node.children.append(Variable(k))
+        node.children.append(parse(v))
+        root.children.append(node)
+    root.children.append(parse(lines[-1]))
+
