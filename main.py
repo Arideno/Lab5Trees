@@ -257,6 +257,7 @@ table = HashTable(20)
 
 root = Node()
 
+results = []
 
 def calc(node: Node):
     if isinstance(node, Assign):
@@ -273,7 +274,7 @@ def calc(node: Node):
     else:
         for child in node.children:
             if not isinstance(child, Assign):
-                return calc(child)
+                results.append(calc(child))
             else:
                 calc(child)
 
@@ -288,7 +289,10 @@ with open('input.txt', 'r') as f:
             node.children.append(parse(v.rstrip()))
             root.children.append(node)
         else:
-            root.children.append(parse(line.rstrip()))
+            if '<' in line:
+                root.children.append(parse(line.split('<')[1].rstrip()))
 
 
-print(calc(root))
+calc(root)
+for result in results:
+    print(result)

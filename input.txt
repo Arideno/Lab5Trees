@@ -1,4 +1,4 @@
 panda=36
 bear=panda/6
 cat=panda/1+bear
-(panda-bear)/cat*0+bear-cat-panda*105
+<(panda-bear)/cat*0+bear-cat-panda*105
