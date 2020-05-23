@@ -270,12 +270,15 @@ def calc(node: Node):
 
 with open('input.txt', 'r') as f:
     lines = f.readlines()
-    for line in lines[:-1]:
-        k, v = line.split('=')
-        node = Assign()
-        node.children.append(Variable(k))
-        node.children.append(parse(v.rstrip()))
-        root.children.append(node)
-    root.children.append(parse(lines[-1]))
+    for line in lines:
+        if '=' in line:
+            k, v = line.split("=")
+            node = Assign()
+            node.children.append(Variable(k))
+            node.children.append(parse(v.rstrip()))
+            root.children.append(node)
+        else:
+            root.children.append(parse(line.rstrip()))
+
 
 print(calc(root))
