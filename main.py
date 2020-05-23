@@ -189,22 +189,32 @@ def pop_operator():
         if isinstance(l, Number) and l.value == 0:
             if isinstance(op, Divide):
                 tree_stack.push(Number(0))
+                return
             elif isinstance(op, Plus):
                 tree_stack.push(r)
+                return
             elif isinstance(op, Multiply):
                 tree_stack.push(Number(0))
+                return
         elif isinstance(r, Number) and r.value == 0:
             if isinstance(op, Plus) or isinstance(op, Minus):
                 tree_stack.push(l)
+                return
             elif isinstance(op, Multiply):
                 tree_stack.push(Number(0))
+                return
         elif isinstance(r, Number) and r.value == 1:
-            if isinstance(op, Divide):
+            if isinstance(op, Divide) or isinstance(op, Multiply):
                 tree_stack.push(l)
-        else:
-            op.children.append(l)
-            op.children.append(r)
-            tree_stack.push(op)
+                return
+        elif isinstance(l, Number) and l.value == 1:
+            if isinstance(op, Multiply):
+                tree_stack.push(r)
+                return
+
+        op.children.append(l)
+        op.children.append(r)
+        tree_stack.push(op)
 
 
 def parse(input_str: str):
