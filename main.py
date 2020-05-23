@@ -287,6 +287,13 @@ with open('input.txt', 'r') as f:
             node.children.append(Variable(k))
             node.children.append(parse(v.rstrip()))
             root.children.append(node)
+        elif '>' in line:
+            k = line[1:].rstrip()
+            v = (input(f"{k} = "))
+            node = Assign()
+            node.children.append(Variable(k))
+            node.children.append(parse(v))
+            root.children.append(node)
         else:
             root.children.append(parse(line.rstrip()))
 
